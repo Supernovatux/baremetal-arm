@@ -2,9 +2,9 @@
 
 This repository contains a tutorial ebook concerning programming a bare-metal ARM system. More specifically it deals with a ARMv7A version of the ARM Versatile Express platform, emulated on a regular PC through QEMU. You can explore the repository, or read things in order.
 
-## Table of Contents
+This fork fixes some issues with the original doc and updates it for the latest uboot version.
 
-An up-to-date PDF version is [also available](http://umanovskis.se/files/arm-baremetal-ebook.pdf).
+## Table of Contents
 
 The following chapters can be thought of as the first edition of the ebook, providing a complete path from getting started to a working program that uses hardware features.
 
