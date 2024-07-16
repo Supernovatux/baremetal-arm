@@ -12,7 +12,7 @@ We will, in this article, change our boot sequence so that U-Boot starts, and th
 
 ## Preparing U-Boot
 
-First, you should download U-Boot. You could clone the project's source tree, but the easiest way is to download a release [from the official FTP server](ftp://ftp.denx.de/pub/u-boot/). For writing this, I used `u-boot-2018.09`. This is also the reason why your cross-compiler toolchain needs `gcc` of at least version 6 - earlier versions cannot compile U-Boot.
+First, you should download U-Boot. You could clone the project's source tree, but the easiest way is to download a release [from the official FTP server](ftp://ftp.denx.de/pub/u-boot/). For writing this, I used `u-boot-v2024.07`. This is also the reason why your cross-compiler toolchain needs `gcc` of at least version 6 - earlier versions cannot compile U-Boot.
 
 After downloading U-Boot and extracting the sources (or cloning them), you need to run two commands in the U-Boot folder.
 
@@ -62,7 +62,7 @@ make all ARCH=arm CROSS_COMPILE=arm-none-eabi-
 Now would be a good time to start U-Boot in QEMU and verify that everything works. Start QEMU by passing the built U-Boot binary to it in the `-kernel` parameter, like this (where `u-boot-2018.09` is a subfolder name that you might need to change):
 
 ```
-qemu-system-arm -M vexpress-a9 -m 32M -no-reboot -nographic -monitor telnet:127.0.0.1:1234,server,nowait -kernel u-boot-2018.09/u-boot
+qemu-system-arm -M vexpress-a9 -m 32M -no-reboot -nographic -monitor telnet:127.0.0.1:1234,server,nowait -kernel u-boot-2024.07/u-boot
 ```
 
 QEMU should show U-Boot starting up, and if you hit a key when U-Boot prompts `Hit any key to stop autoboot`, you'll be dropped into the U-Boot command line. With that, we can be satisfied that U-Boot was built correctly and works, so next we can tell it to boot something specific, like our program.
@@ -131,7 +131,7 @@ First of all, what is an uImage? The U-Boot bootloader can load applications fro
 Let's call `mkimage` and ask it to create an U-Boot uImage out of the application we had previously, the "better hang" one. From now on, we'll also be able to use ELF files instead of the raw binary dumps because U-Boot knows how to load ELF files. `mkimage` should be located in the `tools` subfolder of the U-Boot folder. Assuming our `better-hang.bin` is still present, we can do the following:
 
 ```
-u-boot-2018.09/tools/mkimage -A arm -C none -T kernel -a 0x60000000 -e 0x60000000 -d better-hang.bin bare-arm.uimg
+u-boot-2024.07/tools/mkimage -A arm -C none -T kernel -a 0x60000000 -e 0x60000000 -d better-hang.bin bare-arm.uimg
 ```
 
 With that, we say that we want an uncompressed (`-C none`) image for ARM (`-A arm`), the image will contain an OS kernel (`-T kernel`). With `-d better-hang.bin` we tell `mkimage` to put that `.bin` file into the image. We told U-Boot that our image will be a kernel, which is not really true because we don't have an operating system. But the `kernel` image type indicates to U-Boot that the application is not going to return control to U-Boot, and that it will manage interrupts and other low-level things by itself. This is what we want since we're looking at how to do low-level programming in bare metal.
@@ -145,7 +145,7 @@ When the uImage is created, we need to copy it to the SD card. As noted previous
 We're ready to boot! Let's start QEMU as usual, except that this time we'll also add an extra parameter telling QEMU that we want to use a SD card.
 
 ```
-qemu-system-arm -M vexpress-a9 -m 32M -no-reboot -nographic -monitor telnet:127.0.0.1:1234,server,nowait -kernel u-boot-2018.09/u-boot -sd sdcard.img
+qemu-system-arm -M vexpress-a9 -m 32M -no-reboot -nographic -monitor telnet:127.0.0.1:1234,server,nowait -kernel u-boot-2024.07/u-boot -sd sdcard.img
 ```
 
 Hit a key when U-Boot prompts you to, in order to use the U-Boot command line interface. We can now use a few commands to examine the state of things and confirm that everything is as we wanted. First type `mmc list` and you should get a response like `MMC: 0`. This confirms the presence of an emulated SD card. Then type `ext2ls mmc 0`. That is the equivalent of running `ls` on the SD card's filesystem, and you should see a response that includes the `bare-arm.uimg` file - our uImage.
